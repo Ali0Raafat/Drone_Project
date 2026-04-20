@@ -103,3 +103,825 @@ The remainder of this document is organized as follows:
 | 5 | Machine Learning Algorithms | YOLOv8 pipeline, dataset, training, and evaluation |
 | 6 | FCU–Raspberry Pi Integration | UART communication and MAVLink implementation |
 | 7 | Conclusion & Future Work | Summary, limitations, and future improvements |
+
+
+## Chapter 2: Firefighter Drones Module – Background & Related Work
+
+### 2.1 Introduction
+
+This chapter presents the background and related work for the Firefighter Drones module, which is part of a larger integrated system. It outlines key concepts, technologies, and existing approaches relevant to drone-assisted firefighting.
+
+---
+
+### 2.2 Overview
+
+Firefighter drones are unmanned aerial vehicles (UAVs) designed to support firefighting operations. They provide real-time data, enhance safety, and improve mission efficiency by operating in hazardous or inaccessible environments.
+
+---
+
+### 2.3 Objectives
+
+- Improve firefighter safety  
+- Provide real-time situational awareness  
+- Enable access to hard-to-reach locations  
+- Support search and rescue operations  
+- Enhance fire monitoring and decision-making  
+
+---
+
+### 2.4 System Description
+
+This module focuses on UAV-based support systems that integrate:
+
+- **Robotics**: Autonomous or remote-controlled flight systems  
+- **AI and Sensing**: Thermal imaging, object detection, and environmental analysis  
+- **Communication Systems**: Real-time video streaming and telemetry transmission  
+
+These drones function as preliminary responders by scanning fire scenes, detecting hazards, and assisting operational teams before direct human intervention.
+
+---
+
+### 2.5 Core Concepts
+
+#### 2.5.1 Key Capabilities
+
+- **Information Gathering**
+  - Thermal cameras for detecting heat sources and victims  
+  - Live video feeds for decision support  
+
+- **Accessibility**
+  - Ability to reach rooftops, high-rise structures, and confined areas  
+
+- **Multi-Angle Observation**
+  - Multiple viewpoints for comprehensive scene analysis  
+
+- **Indoor Navigation**
+  - Operation within buildings during structural fires  
+
+---
+
+#### 2.5.2 Technological Advancements
+
+- Compact drone designs for rapid deployment  
+- Increased payload capacity (sensors, cameras, extinguishers)  
+- Autonomous navigation systems  
+- Real-time data transmission  
+- Extended battery performance  
+- Obstacle detection and avoidance  
+
+---
+
+#### 2.5.3 Use Cases
+
+| Scenario             | Application                                   |
+|---------------------|-----------------------------------------------|
+| Wildfires           | Fire spread monitoring and hotspot detection  |
+| Urban Fires         | Real-time scene assessment                    |
+| Search & Rescue     | Victim detection in complex environments      |
+| Hazardous Materials | Gas detection and risk evaluation             |
+| Inspection          | Structural and rooftop analysis               |
+| Training            | Emergency simulation scenarios                |
+
+---
+
+### 2.6 Related Work
+
+#### 2.6.1 Fire Suppression UAV Systems
+
+- UAVs equipped with extinguisher payloads (e.g., CO₂ balls)  
+- Integration of thermal sensors and GPS for fire detection and localization  
+- Focus on reducing direct exposure of firefighters to hazards  
+
+---
+
+#### 2.6.2 First-Responder Drone Systems
+
+- UAVs equipped with cameras and environmental sensors  
+- Capabilities include human detection, scene reconstruction, and hazard analysis  
+- Proposed enhancements include robotic manipulators and heat mapping  
+
+---
+
+#### 2.6.3 Drone Deployment Optimization
+
+- Mathematical models for wildfire spread prediction and loss estimation  
+- Use of metaheuristic algorithms (e.g., Water Wave Optimization)  
+- Focus on improving scheduling efficiency and response times  
+
+---
+
+#### 2.6.4 Fire Extinguishing Quadcopter Designs
+
+- Systems integrating flight controllers, servo mechanisms, and payload release units  
+- Capable of targeted fire suppression through precision deployment  
+
+---
+
+#### 2.6.5 Operational Integration in Fire Services
+
+- Use of drones across multiple emergency response phases  
+- Integration of thermal and optical imaging with live data streaming  
+- Highlights the need for regulatory compliance and standardized deployment  
+
+---
+
+### 2.7 Technologies
+
+| Category           | Technologies                          |
+|-------------------|--------------------------------------|
+| UAV Platforms     | Quadcopters, Hexacopters             |
+| Sensors           | Thermal cameras, gas sensors         |
+| Navigation        | GPS, autonomous flight systems       |
+| Control Systems   | Flight controllers, RC systems       |
+| Communication     | Real-time video and telemetry        |
+| Optimization      | Metaheuristic algorithms (e.g., WWO) |
+
+---
+
+### 2.8 Implementation Scope
+
+This module includes:
+
+- UAV-based aerial monitoring and inspection  
+- Integration of:
+  - Thermal imaging systems  
+  - GPS modules  
+  - Fire suppression payloads  
+
+- Operational modes:
+  - Autonomous navigation using predefined paths  
+  - Manual control for precision tasks  
+
+- Real-time data integration with command systems  
+- Application of optimization techniques for efficient deployment  
+
+---
+
+### 2.9 Challenges and Considerations
+
+| Challenge         | Description                          | Mitigation Approach                     |
+|------------------|--------------------------------------|------------------------------------------|
+| Regulations      | Airspace and legal restrictions      | Develop compliant operational frameworks |
+| Interoperability | Integration across systems           | Standardize communication protocols      |
+| Privacy          | Surveillance and data concerns       | Enforce strict data governance           |
+| Limited Range    | Battery and endurance constraints    | Improve energy management systems        |
+
+---
+
+## Chapter 3: Simulation Using ROS
+
+### Overview
+
+This project designs and develops an autonomous fire detection and monitoring drone system. The drone uses computer vision to detect fires in real-time, transmits live data to a ground control station, and supports emergency response operations. The system is built on a custom hexacopter frame integrated with a Raspberry Pi, APM 2.8 flight controller, and YOLOv8-based fire detection model.
+
+---
+
+### Objectives
+
+- Detect and locate fires autonomously using onboard cameras and computer vision
+- Enable real-time data transmission to a ground control station
+- Operate in environments too dangerous or inaccessible for human firefighters
+- Reduce response time and minimize risk to human life
+- Validate system performance through simulation and real-world testing
+
+---
+
+### System Architecture
+
+The system is organized into four main layers:
+
+```
+┌─────────────────────────────────────┐
+│          Ground Control Station      │
+│     (Real-time data + alerts)        │
+└────────────────┬────────────────────┘
+                 │ Communication Module
+┌────────────────▼────────────────────┐
+│            Raspberry Pi 4           │
+│   YOLOv8 Fire Detection | OpenCV    │
+│   MAVLink | Distance Calculation    │
+└────────────────┬────────────────────┘
+                 │ UART Serial
+┌────────────────▼────────────────────┐
+│          APM 2.8 Flight Controller  │
+│   GPS | IMU | Navigation | ESCs     │
+└────────────────┬────────────────────┘
+                 │
+┌────────────────▼────────────────────┐
+│         Hardware Layer              │
+│  Motors | ESCs | Props | Battery    │
+└─────────────────────────────────────┘
+```
+
+---
+
+### Hardware Components
+
+| # | Component | Specification | Role |
+|---|-----------|--------------|------|
+| 1 | APM 2.8 | Arduino Mega-based IMU autopilot | Flight control, navigation |
+| 2 | Raspberry Pi 4 | 4GB RAM | Onboard processing, AI inference |
+| 3 | Camera | 5MP v1.3 | Live video feed for fire detection |
+| 4 | ESC | 30A | Motor speed control |
+| 5 | Brushless Motor | 2400KV | Propulsion |
+| 6 | Propellers | 10x4.7 | Lift generation |
+| 7 | Dual-side PCB | Prototype | Component integration |
+| 8 | Buck Converter | 3A | Voltage regulation |
+| 9 | LiPo Battery | 3S 5200mAh (11.1V) | Power source |
+| 10 | Frame | 3D-printed F550 hexacopter | Structural base |
+| 11 | Battery Connector | 3A | Power distribution |
+| 12 | Wires | 2mm | Electrical connections |
+
+---
+
+### AI / ML Pipeline
+
+#### Model: YOLOv8
+
+- **Task:** Real-time fire and smoke detection
+- **Architecture:** Single-stage CNN object detector
+- **Training Platform:** Google Colab
+- **Optimizer:** Adam
+- **Dataset Source:** Google Images (Unsplash, iStock) + Roboflow datasets
+
+#### Pipeline
+
+```
+Raw Images
+    │
+    ▼
+Data Gathering (~3000 images)
+    │
+    ▼
+Annotation (LabelImg / Roboflow)
+    │
+    ▼
+Data Augmentation (Roboflow auto-annotation)
+    │
+    ▼
+YOLOv8 Training (Google Colab + Ultralytics)
+    │
+    ▼
+Model Validation & Testing
+    │
+    ▼
+Inference on Live Drone Feed (Raspberry Pi)
+```
+
+#### Why YOLOv8?
+
+- High accuracy on MS COCO and Roboflow 100 benchmarks
+- Supports detection, segmentation, and classification
+- Developer-friendly CLI and Python package
+- Large active community and long-term support by Ultralytics
+
+---
+
+### Simulation Setup
+
+#### Tools Used
+
+| Tool | Purpose |
+|------|---------|
+| Gazebo 11 | 3D physics-based robot simulation |
+| ROS Noetic | Robot operating system, sensor/topic communication |
+| MAVROS | MAVLink to ROS bridge |
+| MAVProxy | Ground control protocol |
+| Darknet ROS | YOLO object detection in ROS |
+| ArduPilot | Drone autopilot firmware |
+
+#### ROS Packages
+
+| Package | Function |
+|---------|----------|
+| `iq_sim` | Drone model + Gazebo world definition |
+| `iq_gnc` | Flight control scripts (waypoints, obstacle avoidance) |
+| `darknet_ros` | Real-time YOLO object detection |
+
+#### Sensors Simulated
+
+- **Camera** — 5MP, 640x480, 10Hz update rate
+- **LiDAR (Hokuyo)** — 1024 samples, 30m range, used for obstacle avoidance
+
+#### Key Setup Commands
+
+```bash
+# Launch Gazebo world
+roslaunch iq_sim droneOnly.launch
+
+# Run obstacle avoidance
+rosrun iq_gnc obs_avoid.py
+
+# Run square flight path
+rosrun iq_gnc square.cpp
+
+# Launch MAVROS
+roslaunch iq_sim apm.launch
+
+# Install CUDA for YOLO acceleration
+sudo apt install nvidia-cuda-toolkit
+```
+
+---
+
+### Communication: FCU and Raspberry Pi
+
+#### Protocol: UART (Serial)
+
+```
+Raspberry Pi 4          APM 2.8
+─────────────           ────────
+TX  ──────────────────► RX
+RX  ◄────────────────── TX
+GND ─────────────────── GND
+```
+
+#### Setup Steps
+
+1. Enable UART on Raspberry Pi via `sudo raspi-config`
+2. Add `enable_uart=1` to `/boot/config.txt`
+3. Identify serial port: `/dev/ttyAMA0`
+4. Configure APM 2.8 serial port via Mission Planner
+5. Use **Pymavlink** for MAVLink message handling
+
+#### Key Libraries
+
+| Library | Purpose |
+|---------|---------|
+| `pyserial` | Serial port communication |
+| `pymavlink` | MAVLink message protocol |
+| `OpenCV` | Computer vision processing |
+| `MAVProxy` | Ground control station software |
+| `matplotlib` | Data visualization |
+
+---
+
+### Distance Calculation
+
+The system uses the **Triangle Similarity Method** to estimate distance from the camera to the detected fire.
+
+```
+d = (f x R) / r
+```
+
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `f` | 3.60 mm | Focal length (Raspberry Pi Camera V1) |
+| `r` | 10 cm | Marker radius in image plane (constant) |
+| `R` | Calculated | Marker radius in object plane (live video) |
+| `d` | Output | Distance from camera to fire |
+
+---
+
+### Technologies Used
+
+| Category | Technology |
+|----------|-----------|
+| Detection Model | YOLOv8 (Ultralytics) |
+| Vision Library | OpenCV |
+| Programming Language | Python |
+| Training IDE | Google Colab, Jupyter Notebook |
+| Dataset Management | Roboflow |
+| Simulation | Gazebo 11 + ROS Noetic |
+| Communication | UART, MAVLink, MAVROS |
+| Flight Controller | APM 2.8 (ArduPilot) |
+| Companion Computer | Raspberry Pi 4 (4GB) |
+| Hardware Platform | F550 Hexacopter |
+
+---
+
+### Results
+
+- YOLOv8 model successfully detected fire in real-time video with **0.90 confidence score** on test images
+- Obstacle avoidance validated in Gazebo simulation using LiDAR data
+- Drone waypoint navigation tested using `square.cpp` flight script
+- UART link established between Raspberry Pi 4 and APM 2.8 for telemetry and control
+- Distance to fire estimated using triangle similarity method with fixed focal length
+
+---
+
+### Challenges and Solutions
+
+| Challenge | Cause | Solution |
+|-----------|-------|----------|
+| Low detection accuracy | Insufficient training data | Used Roboflow datasets + automatic annotation |
+| Slow YOLO inference | No GPU acceleration | Installed NVIDIA CUDA toolkit |
+| Python version incompatibility | Library conflicts with ArduPilot | Used Python virtual environment v2.8.13 |
+| APM 2.8 processing limitations | Outdated ATmega2560 MCU | Offloaded AI tasks to Raspberry Pi |
+| Serial port conflict | Wrong port selected | Used `/dev/ttyAMA0` (primary UART only) |
+
+---
+
+### Future Improvements
+
+- Extend battery life using solar power or fast-swap mechanisms
+- Design weather-resistant drone body for smoke and high-wind environments
+- Implement drone swarm coordination for large fire coverage
+- Replace APM 2.8 with a modern ARM Cortex-based flight controller
+- Integrate thermal camera for enhanced heat detection
+- Add satellite or mesh network communication for remote area operations
+
+---
+
+
+## Chapter 4: Fire Drone System
+
+### Overview
+
+This chapter documents the full hardware architecture of the autonomous firefighting drone — a six-rotor UAV platform designed to detect, assess, and monitor fire events in environments hazardous to human responders. It covers component selection, system integration, power architecture, electrical design, and the physical rationale behind every hardware decision.
+
+---
+
+### Objectives
+
+- Design and assemble a stable six-rotor UAV suitable for autonomous firefighting missions
+- Select hardware based on payload capacity, power budget, weight, and compute requirements
+- Integrate a companion computer with a dedicated flight controller over a serial communication bus
+- Establish an isolated, regulated power delivery system for both high-current motor drive and sensitive digital electronics
+- Provide a reproducible, documented hardware platform as the substrate for all software layers
+
+---
+
+### System Description
+
+The drone is a hexacopter-class UAV combining three co-dependent subsystems:
+
+| Subsystem | Function |
+|---|---|
+| Compute & Perception | Onboard AI inference, camera capture, sensor data processing |
+| Flight Control | Low-level stabilization, motor mixing, GPS navigation, IMU fusion |
+| Power & Actuation | Energy storage, voltage regulation, motor drive |
+
+- **Robotics:** Sensors feed perception, perception informs control, control drives actuators — coordinated over a MAVLink communication bus
+- **Physics:** Stable flight maintained by six independently controlled rotors generating differential thrust via PID control loop
+- **Systems Engineering:** ArduPilot on ATmega2560 handles low-latency flight control; Python on Raspberry Pi 4 handles AI inference and mission logic via UART/MAVLink
+
+---
+
+### Architecture & Design
+
+#### System Layers
+
+```
+┌──────────────────────────────────────────────────────┐
+│                  MISSION / AI LAYER                   │
+│   YOLOv8 Inference · Distance Estimation · OpenCV    │
+│                  [ Raspberry Pi 4 ]                   │
+├──────────────────────────────────────────────────────┤
+│               COMMUNICATION LAYER                     │
+│         MAVLink over UART · /dev/ttyAMA0             │
+│              Pymavlink · MAVROS                       │
+├──────────────────────────────────────────────────────┤
+│              FLIGHT CONTROL LAYER                     │
+│     PID Stabilization · IMU Fusion · GPS Nav         │
+│              ArduPilot · [ APM 2.8 ]                 │
+├──────────────────────────────────────────────────────┤
+│                  HARDWARE LAYER                       │
+│  6× ESC · 6× Motor · 6× Propeller · LiPo Battery   │
+│  Buck Converter · PCB · F550 Hexacopter Frame        │
+└──────────────────────────────────────────────────────┘
+```
+
+#### Power Architecture
+
+```
+[ 3S LiPo — 11.1V ]
+        │
+        ├──→ [ Power Distribution PCB ]──→ 6× ESC ──→ 6× Brushless Motor
+        │
+        └──→ [ Buck Converter (3A) ]──→ 5V regulated
+                                              ├──→ Raspberry Pi 4
+                                              └──→ Camera Module V1.3
+```
+
+#### Compute & Sensor Integration
+
+```
+[ 5MP Camera V1.3 ]──CSI──→ [ Raspberry Pi 4 ]
+                                      │
+                               UART / MAVLink
+                                      │
+                              [ APM 2.8 FCU ]
+                                      │
+                    ┌─────────────────┼─────────────────┐
+                 [ GPS ]        [ ESC × 6 ]        [ Receiver ]
+```
+
+#### Motor Layout — Hexacopter X Configuration
+
+```
+        Motor 1 (CCW)
+             │
+Motor 6 ────┼──── Motor 2 (CW)
+(CW)         │
+Motor 5 ────┼──── Motor 3 (CCW)
+(CCW)        │
+        Motor 4 (CW)
+```
+
+> Alternating CW/CCW pairs cancel gyroscopic torque, providing natural yaw stability without constant FCU correction.
+
+---
+
+### Hardware Components
+
+#### Bill of Materials
+
+| # | Component | Specification | Qty | Role |
+|---|---|---|---|---|
+| 1 | APM 2.8 Flight Controller | ATmega2560, IMU, Barometer | 1 | Autopilot & stabilization |
+| 2 | Raspberry Pi 4 | ARM Cortex-A72, 4GB LPDDR4 | 1 | Companion computer & AI inference |
+| 3 | Camera Module | 5MP V1.3, f = 3.60 mm, CSI | 1 | Visual input for fire detection |
+| 4 | ESC | 30A continuous, 3S compatible | 6 | Motor speed regulation |
+| 5 | Brushless Motor | 2400KV, 3-phase outrunner | 6 | Thrust generation |
+| 6 | Propellers | 10 × 4.7 in, CW + CCW pairs | 3 sets | Aerodynamic lift |
+| 7 | Dual-Side PCB | Prototype FR4, dual-layer | 1 | Power distribution & interconnect |
+| 8 | Buck Converter | Input: 7–35V · Output: 5V 3A | 1 | Regulated 5V supply |
+| 9 | LiPo Battery | 3S, 11.1V, 5200mAh, XT60 | 1 | Primary energy source |
+| 10 | Hexacopter Frame | F550, 3D-printed, 550mm span | 1 | Structural chassis |
+| 11 | Battery Connector | 3A rated | 1 | Battery-to-PCB interface |
+| 12 | Silicone Wire | 2mm gauge | — | Power transmission |
+
+#### APM 2.8 — Flight Controller
+
+Arduino Mega-based autopilot providing IMU fusion, PID stabilization, GPS navigation, and MAVLink telemetry. Handles all time-critical flight operations independently of the companion computer.
+
+| Limitation | Impact |
+|---|---|
+| ATmega2560 processing power | Insufficient for onboard AI — mitigated by companion computer |
+| Older IMU sensors | Lower update rate vs. modern FCUs |
+| No onboard logging | Diagnostic data captured externally via MAVProxy |
+| Higher power draw | Marginally reduces battery endurance |
+
+#### Raspberry Pi 4 (4GB) — Companion Computer
+
+Handles all high-level computation: YOLOv8 fire detection inference, OpenCV image processing, mission logic, and MAVLink command generation.
+
+| Interface | Usage |
+|---|---|
+| CSI Ribbon | 5MP Camera V1.3 input |
+| UART (`/dev/ttyAMA0`) | MAVLink link to APM 2.8 |
+| USB / GPIO | Peripheral expansion |
+
+#### 5MP Camera V1.3
+
+- Fixed focal length: **f = 3.60 mm** — used in distance estimation formula
+- Reliable under variable lighting including fire glow and partial smoke
+- Native CSI integration with zero driver overhead
+
+#### ESC 30A — Electronic Speed Controller
+
+- One ESC per motor
+- Converts PWM throttle signals from APM 2.8 into three-phase AC drive current
+- 30A rating provides headroom above peak hover current (~4–5A per motor at 50% throttle)
+
+#### Brushless Motor — 2400KV
+
+| Metric | Value |
+|---|---|
+| KV Rating | 2400 RPM/V |
+| No-load speed @ 11.1V | ~26,640 RPM |
+| Advantage over brushed | Higher efficiency, lower heat, zero brush wear |
+
+#### 3S LiPo — 5200mAh
+
+| Parameter | Value |
+|---|---|
+| Nominal voltage | 11.1V (3 × 3.7V) |
+| Capacity | 5200 mAh |
+| Energy stored | ~57.7 Wh |
+| Target hover endurance | 10–15 min under load |
+
+#### F550 Frame — 3D Printed Hexacopter
+
+- Lightweight construction preserves payload budget
+- Arms positioned at equal 60° intervals for symmetric thrust
+- Modular design accommodates future payload additions
+- 3D printing enables rapid design iteration
+
+#### Buck Converter (3A) & Dual-Side PCB
+
+- Buck Converter steps 11.1V to stable 5V at >90% efficiency
+- Prevents motor-generated EMI from reaching compute subsystem
+- Dual-sided PCB consolidates all ESC power connections into compact vibration-resistant board
+
+---
+
+### Technologies Used
+
+#### Hardware
+
+| Category | Component |
+|---|---|
+| Flight Control | APM 2.8 (ArduPilot / ATmega2560) |
+| Companion Compute | Raspberry Pi 4 — 4GB |
+| Vision | 5MP Camera V1.3 (CSI) |
+| Motor Drive | 6× ESC 30A |
+| Actuation | 6× Brushless Motor 2400KV + 6× Propeller 10×4.7 |
+| Power | 3S LiPo 5200mAh · Buck Converter 3A · Dual-Side PCB |
+| Structure | 3D-Printed F550 Hexacopter Frame |
+
+#### Firmware & Software
+
+| Technology | Purpose |
+|---|---|
+| ArduPilot (ArduCopter) | Flight controller firmware |
+| MAVLink Protocol | FCU ↔ Raspberry Pi communication |
+| MAVProxy 1.5.2 | Ground control station interface |
+| Mission Planner | APM 2.8 configuration & calibration |
+| Pymavlink | Python MAVLink library |
+| Raspberry Pi OS | Linux OS on companion computer |
+| Python 3 | Application scripting |
+| OpenCV | Image capture and preprocessing |
+| Ultralytics YOLOv8 | Fire detection inference |
+| ROS Noetic / MAVROS | Simulation & telemetry bridge |
+
+---
+
+### Implementation Details
+
+#### Assembly Sequence
+
+**Step 1 — Frame Assembly**
+
+Six motor arms assembled on F550 frame at 60° intervals. All fasteners torqued consistently to prevent in-flight loosening from vibration.
+
+**Step 2 — Motor & ESC Installation**
+
+One 2400KV motor per arm. Each motor connected to a dedicated 30A ESC via three-phase bullet connectors. ESC signal leads routed to APM 2.8 output channels 1–6. CW/CCW orientation assigned per hexacopter X layout.
+
+**Step 3 — PCB & Power Distribution**
+
+Dual-sided PCB installed on center deck. All six ESC power leads soldered to PCB power bus. Buck Converter wired to bus input and 5V rail output.
+
+**Step 4 — APM 2.8 Integration**
+
+APM 2.8 mounted centrally on vibration-dampening foam standoffs. ESC signal wires, GPS, and UART Telem1 port connected.
+
+**Step 5 — Raspberry Pi 4 Integration**
+
+Raspberry Pi 4 mounted on upper deck. CSI ribbon routed to Camera V1.3. UART TX/RX cross-connected to APM 2.8 Telem1 at 57600 baud.
+
+**Step 6 — Battery Placement**
+
+3S LiPo secured to underside of center plate at calculated center of gravity to minimize roll/pitch trim offset.
+
+#### APM 2.8 Configuration (Mission Planner)
+
+```
+Frame type       : Hexacopter X
+Motor mapping    : ArduCopter 6-rotor X layout
+Accelerometer    : Level calibration
+Compass          : Rotating calibration procedure
+ESC calibration  : All-at-once throttle range calibration
+Serial (Telem1)  : MAVLink · 57600 baud · Raspberry Pi UART
+```
+
+#### UART Enablement on Raspberry Pi
+
+```bash
+# Enable hardware UART, disable serial console
+sudo raspi-config
+# → Interface Options → Serial → Disable login shell → Enable serial port hardware
+
+# Add to /boot/config.txt
+enable_uart=1
+
+sudo reboot
+
+# Serial port identifier for MAVLink
+/dev/ttyAMA0
+```
+
+---
+
+### Mathematical & Physical Models
+
+#### Rotor Thrust & Torque
+
+```
+T = C_T · ρ · n² · D⁴
+
+Q = C_Q · ρ · n² · D⁵
+```
+
+| Symbol | Description | Unit |
+|---|---|---|
+| `C_T` | Thrust coefficient (propeller geometry) | dimensionless |
+| `C_Q` | Torque coefficient (propeller geometry) | dimensionless |
+| `ρ` | Air density (~1.225 at sea level) | kg/m³ |
+| `n` | Rotational speed | rev/s |
+| `D` | Propeller diameter (10 in = 0.254 m) | m |
+
+**Hover equilibrium condition:**
+
+```
+6 · T = m · g
+
+T_required = (m · g) / 6
+```
+
+#### Power Budget & Hover Endurance
+
+```
+P_motor  ≈ 220–330 W   (6 motors at ~50% throttle, 11.1V)
+P_compute ≈ 6–8 W       (Raspberry Pi 4 + camera under load)
+P_FCU    ≈ 1 W          (APM 2.8)
+
+I_total  ≈ 20–30 A      (system average at hover)
+
+Endurance = Capacity / I_total
+           = 5200 mAh / 25 A
+           ≈ 0.208 h
+           ≈ 12–13 minutes (theoretical hover)
+```
+
+#### Center of Gravity Constraint
+
+```
+x_CoG = Σ(mᵢ · xᵢ) / Σmᵢ = 0
+
+y_CoG = Σ(mᵢ · yᵢ) / Σmᵢ = 0
+```
+
+#### Camera Distance Estimation (Triangle Similarity)
+
+```
+d = (f · R) / r
+```
+
+| Symbol | Description |
+|---|---|
+| `d` | Distance from camera to detected object |
+| `f` | Camera focal length = **3.60 mm** (fixed, Camera V1.3) |
+| `R` | Real-world radius of the detected marker/object |
+| `r` | Pixel radius of the detected object in the image plane |
+
+---
+
+### Results
+
+#### Flight System
+
+| Outcome | Status |
+|---|---|
+| Stable autonomous hover with PID stabilization | ✅ Achieved |
+| GPS-guided waypoint navigation via MAVLink | ✅ Achieved |
+| ESC and motor calibration consistent across all 6 channels | ✅ Verified |
+| Estimated hover endurance 10–15 min under payload | ✅ Within design target |
+
+#### Integration & Communication
+
+| Outcome | Status |
+|---|---|
+| Raspberry Pi ↔ APM 2.8 MAVLink link at 57600 baud | ✅ Operational |
+| 5MP Camera streaming to YOLOv8 inference pipeline | ✅ Operational |
+| 5V compute rail isolated from motor EMI | ✅ Verified |
+| Power distribution PCB supplying all 6 ESCs without fault | ✅ Verified |
+
+#### Validation
+
+| Outcome | Status |
+|---|---|
+| Hardware validated in Gazebo/ROS simulation prior to build | ✅ Complete |
+| Physical bench test: motor directions, ESC calibration, IMU sensors | ✅ Passed |
+| YOLOv8 fire detection executed on Raspberry Pi 4 with live camera feed | ✅ Functional |
+| MAVProxy: takeoff, land, waypoint, mode-change commands confirmed | ✅ Passed |
+
+---
+
+### Challenges & Solutions
+
+| Challenge | Root Cause | Solution |
+|---|---|---|
+| APM 2.8 insufficient for AI workloads | ATmega2560 processing ceiling | Offloaded all ML inference to Raspberry Pi 4 |
+| Motor EMI corrupting Raspberry Pi | Shared power rail, back-EMF noise | Dedicated regulated 5V rail via Buck Converter |
+| IMU readings degraded by vibration | Motor/propeller vibration through frame | APM 2.8 mounted on vibration-dampening foam standoffs |
+| CoG shift under full payload | Asymmetric component mass distribution | Battery centered on underside; electronics arranged symmetrically |
+| UART voltage level concern | Raspberry Pi GPIO is 3.3V logic | APM 2.8 UART confirmed 5V-tolerant; baud rate verified |
+| Limited flight endurance | High motor current vs. battery capacity | Selected 5200mAh 3S; minimized non-essential component mass |
+| Frame stress at motor arm roots | 3D-printed PLA under dynamic motor load | Reprinted with higher infill; added reinforcing fasteners |
+| ESC throttle range inconsistency | Factory ESC variation across 6 units | All-at-once ESC calibration via Mission Planner |
+
+---
+
+### Future Improvements
+
+#### Hardware Generation 2
+
+| Improvement | Rationale |
+|---|---|
+| Replace APM 2.8 with Pixhawk 4 or Cube Orange | ARM Cortex-M7; onboard logging; advanced sensor fusion |
+| Add FLIR Lepton thermal camera | Fire detection through smoke and low-visibility conditions |
+| Upgrade to 4S / 6S LiPo | Higher voltage reduces current draw, extends endurance |
+| Custom PDB with integrated current sensing | Real-time power telemetry and better EMI suppression |
+
+#### Platform Expansion
+
+| Improvement | Rationale |
+|---|---|
+| Fire suppression payload | Transition from detection-only to active firefighting |
+| LTE / 5G telemetry link | Enables BVLOS operations beyond RC control range |
+| Replace Raspberry Pi 4 with NVIDIA Jetson Orin | GPU-accelerated inference, lower latency |
+| Multi-drone swarm coordination | Wide-area awareness combined with targeted low-altitude response |
+
