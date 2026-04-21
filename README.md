@@ -1024,13 +1024,13 @@ d = (f · R) / r
 
 ## Chapter 5: Machine Learning Algorithms for Fire Detection
 
-### Overview
+### 5.1 Overview
 
 This chapter covers the complete machine learning pipeline developed to enable real-time fire detection from a drone-mounted camera. The system leverages **YOLOv8** to identify fire and smoke in live video feeds, and computes the **distance to the detected fire** using triangle similarity geometry. The pipeline spans dataset construction, annotation, augmentation, model training, evaluation, and on-device inference integration.
 
 ---
 
-### Objectives
+### 5.2 Objectives
 
 - Build a fire-specific image dataset through manual collection and automated annotation
 - Train a high-accuracy, real-time fire detection model using YOLOv8
@@ -1040,7 +1040,7 @@ This chapter covers the complete machine learning pipeline developed to enable r
 
 ---
 
-### System Description
+### 5.3 System Description
 
 The detection subsystem operates as a perception layer within the broader drone architecture. The Raspberry Pi 4 captures live video, passes frames through the trained YOLOv8 model, and returns bounding boxes with class confidence scores.
 
@@ -1066,7 +1066,7 @@ Live Camera Feed
 
 ---
 
-### Data Pipeline
+### 5.4 Data Pipeline
 
 #### Dataset Construction
 
@@ -1092,7 +1092,7 @@ Five to six Roboflow datasets were merged with the original collection, signific
 
 ---
 
-### Model — YOLOv8
+### 5.5 Model — YOLOv8
 
 #### Why YOLO over Other Pre-trained Models?
 
@@ -1128,7 +1128,7 @@ The backbone is a deep CNN with 24 convolutional layers:
 
 ---
 
-### Development Environment
+### 5.6 Development Environment
 
 #### IDEs Used
 
@@ -1157,7 +1157,7 @@ The backbone is a deep CNN with 24 convolutional layers:
 
 ---
 
-### Technologies Used
+### 5.7 Technologies Used
 
 | Technology | Details |
 |---|---|
@@ -1171,7 +1171,7 @@ The backbone is a deep CNN with 24 convolutional layers:
 
 ---
 
-### Implementation Details
+### 5.8 Implementation Details
 
 #### Step 1 — Environment Setup (Google Colab)
 
@@ -1242,7 +1242,7 @@ for image_path in glob.glob("/runs/detect/predict/*.jpg")[:1]:
 
 ---
 
-### Distance Estimation
+### 5.9 Distance Estimation
 
 The system estimates the **physical distance between the drone camera and the detected fire** using the **Triangle Similarity Method**.
 
@@ -1271,7 +1271,7 @@ Where `R` is calculated dynamically from the bounding box dimensions during live
 
 ---
 
-### Results
+### 5.10 Results
 
 | Metric | Outcome |
 |---|---|
@@ -1284,7 +1284,7 @@ Where `R` is calculated dynamically from the bounding box dimensions during live
 
 ---
 
-### Challenges & Solutions
+### 5.11 Challenges & Solutions
 
 | Problem | Cause | Solution |
 |---|---|---|
@@ -1296,7 +1296,7 @@ Where `R` is calculated dynamically from the bounding box dimensions during live
 
 ---
 
-### Future Improvements
+### 5.12 Future Improvements
 
 - **Thermal Camera Integration:** Extend detection to infrared feeds for low-visibility and night-time scenarios
 - **Multi-class Detection:** Add `smoke`, `person`, and `vehicle` classes to enrich situational awareness
@@ -1311,7 +1311,7 @@ Where `R` is calculated dynamically from the bounding box dimensions during live
 
 ## Chapter 6: FCU and Raspberry Pi Integration
 
-### Overview
+### 6.1 Overview
 
 This chapter documents the integration between the **APM 2.8 Flight Control Unit (FCU)** and a **Raspberry Pi 4** companion computer in the firefighting drone system.
 
@@ -1326,7 +1326,7 @@ Communication between them is established via **MAVLink over UART**.
 
 ---
 
-### System Architecture
+### 6.2 System Architecture
 
 ```
 ┌──────────────────────────────────────────────┐
@@ -1354,7 +1354,7 @@ Sensors → FCU → [MAVLink/UART] → Raspberry Pi → AI Processing → Comman
 
 ---
 
-### Components
+### 6.3 Components
 
 | Component | Specification | Role |
 |---|---|---|
@@ -1376,7 +1376,7 @@ The APM 2.8 is functional but acknowledged as legacy hardware. This directly mot
 
 ---
 
-### UART Communication
+### 6.4 UART Communication
 
 #### Physical Wiring
 
@@ -1409,7 +1409,7 @@ The primary UART interface is exposed at `/dev/ttyAMA0`.
 
 ---
 
-### Software Stack
+### 6.5 Software Stack
 
 | Library | Purpose |
 |---|---|
@@ -1434,7 +1434,7 @@ python3 -m pip install -r pymavlink/requirements.txt
 
 ---
 
-### Telemetry and Control
+### 6.5 Telemetry and Control
 
 #### Incoming Data (FCU to Raspberry Pi)
 
@@ -1452,7 +1452,7 @@ python3 -m pip install -r pymavlink/requirements.txt
 
 ---
 
-### Key MAVProxy Commands
+### 6.6 Key MAVProxy Commands
 
 | Command | Description |
 |---|---|
@@ -1464,7 +1464,7 @@ python3 -m pip install -r pymavlink/requirements.txt
 
 ---
 
-### Challenges & Solutions
+### 6.7 Challenges & Solutions
 
 | Problem | Cause | Solution |
 |---|---|---|
@@ -1475,7 +1475,7 @@ python3 -m pip install -r pymavlink/requirements.txt
 
 ---
 
-### Results
+### 6.8 Results
 
 - Stable bidirectional UART link established between Raspberry Pi 4 and APM 2.8
 - Real-time MAVLink telemetry (GPS, altitude, battery) successfully streamed to companion computer
@@ -1484,7 +1484,7 @@ python3 -m pip install -r pymavlink/requirements.txt
 
 ---
 
-### Future Improvements
+### 6.9 Future Improvements
 
 | Area | Proposed Enhancement |
 |---|---|
@@ -1498,7 +1498,7 @@ python3 -m pip install -r pymavlink/requirements.txt
 
 ## Chapter 7: Conclusion & Future Work
 
-### Conclusion
+### 7.1 Conclusion
 
 The Fire Flight drone project demonstrates the potential of drone technology in wildfire management.
 
@@ -1513,7 +1513,7 @@ Key outcomes:
 
 ---
 
-### Limitations
+### 7.2 Limitations
 
 | Limitation | Description |
 |---|---|
@@ -1524,7 +1524,7 @@ Key outcomes:
 
 ---
 
-### Future Work
+### 7.3 Future Work
 
 #### Extended Battery Life
 - Develop more efficient battery technologies
