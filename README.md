@@ -32,7 +32,7 @@
 19. [3.2 Objectives](#32-objectives)
 20. [3.3 System Architecture](#33-system-architecture)
 21. [3.4 Hardware Components](#34-hardware-components)
-22. 3.5 AI / ML Pipeline <a id="35-ai-ml-pipeline"></a>
+22. [3.5 AI / ML Pipeline](#35-ai-ml-pipeline)
 23. [3.6 Simulation Setup](#36-simulation-setup)
 24. [3.7 Communication FCU and Raspberry Pi](#37-communication-fcu-and-raspberry-pi)
 25. [3.8 Distance Calculation](#38-distance-calculation)
