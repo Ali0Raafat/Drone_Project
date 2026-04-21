@@ -1,10 +1,10 @@
 # Machine Learning Technique for Enhanced Situational Awareness With Fire Fighter Drones
 
 
+# Table of Contents
 
-## Table of Contents
+## Chapter 1 — Introduction
 
-### Chapter 1 — Introduction
 1. [Overview](#11-overview)
 2. [Problem Statement](#12-problem-statement)
 3. [Objectives](#13-objectives)
@@ -14,7 +14,8 @@
 7. [Contributions](#17-contributions)
 8. [Organization](#18-organization)
 
-### Chapter 2 — Background & Related Work
+## Chapter 2 — Background & Related Work
+
 9. [Introduction](#21-introduction)
 10. [Overview](#22-overview)
 11. [Objectives](#23-objectives)
@@ -25,7 +26,8 @@
 16. [Implementation Scope](#28-implementation-scope)
 17. [Challenges and Considerations](#29-challenges-and-considerations)
 
-### Chapter 3 — Simulation Using ROS
+## Chapter 3 — Simulation Using ROS
+
 18. [Overview](#31-overview)
 19. [Objectives](#32-objectives)
 20. [System Architecture](#33-system-architecture)
@@ -39,34 +41,37 @@
 28. [Challenges and Solutions](#311-challenges-and-solutions)
 29. [Future Improvements](#312-future-improvements)
 
-### Chapter 4 — Fire Drone System
+## Chapter 4 — Fire Drone System
+
 30. [Overview](#41-overview)
 31. [Objectives](#42-objectives)
 32. [System Description](#43-system-description)
-33. [Architecture and Design](#44-architecture-and-design)
+33. [Architecture & Design](#44-architecture--design)
 34. [Bill of Materials](#45-bill-of-materials)
 35. [Technologies Used](#46-technologies-used)
 36. [Implementation Details](#47-implementation-details)
-37. [Mathematical and Physical Models](#48-mathematical-and-physical-models)
+37. [Mathematical & Physical Models](#48-mathematical--physical-models)
 38. [Results](#49-results)
-39. [Challenges and Solutions](#410-challenges-and-solutions)
+39. [Challenges & Solutions](#410-challenges--solutions)
 40. [Future Improvements](#411-future-improvements)
 
-### Chapter 5 — Machine Learning Algorithms for Fire Detection
+## Chapter 5 — Machine Learning Algorithms for Fire Detection
+
 41. [Overview](#51-overview)
 42. [Objectives](#52-objectives)
 43. [System Description](#53-system-description)
 44. [Data Pipeline](#54-data-pipeline)
-45. [Model YOLOv8](#55-model-yolov8)
+45. [Model — YOLOv8](#55-model--yolov8)
 46. [Development Environment](#56-development-environment)
 47. [Technologies Used](#57-technologies-used)
 48. [Implementation Details](#58-implementation-details)
 49. [Distance Estimation](#59-distance-estimation)
 50. [Results](#510-results)
-51. [Challenges and Solutions](#511-challenges-and-solutions)
+51. [Challenges & Solutions](#511-challenges--solutions)
 52. [Future Improvements](#512-future-improvements)
 
-### Chapter 6 — FCU and Raspberry Pi Integration
+## Chapter 6 — FCU and Raspberry Pi Integration
+
 53. [Overview](#61-overview)
 54. [System Architecture](#62-system-architecture)
 55. [Components](#63-components)
@@ -74,11 +79,12 @@
 57. [Software Stack](#65-software-stack)
 58. [Telemetry and Control](#66-telemetry-and-control)
 59. [Key MAVProxy Commands](#67-key-mavproxy-commands)
-60. [Challenges and Solutions](#68-challenges-and-solutions)
+60. [Challenges & Solutions](#68-challenges--solutions)
 61. [Results](#69-results)
 62. [Future Improvements](#610-future-improvements)
 
-### Chapter 7 — Conclusion and Future Work
+## Chapter 7 — Conclusion & Future Work
+
 63. [Conclusion](#71-conclusion)
 64. [Limitations](#72-limitations)
 65. [Future Work](#73-future-work)
