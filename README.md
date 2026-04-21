@@ -363,13 +363,13 @@ This module includes:
 
 ## Chapter 3: Simulation Using ROS
 
-### Overview
+### 3.1 Overview
 
 This project designs and develops an autonomous fire detection and monitoring drone system. The drone uses computer vision to detect fires in real-time, transmits live data to a ground control station, and supports emergency response operations. The system is built on a custom hexacopter frame integrated with a Raspberry Pi, APM 2.8 flight controller, and YOLOv8-based fire detection model.
 
 ---
 
-### Objectives
+### 3.2 Objectives
 
 - Detect and locate fires autonomously using onboard cameras and computer vision
 - Enable real-time data transmission to a ground control station
@@ -379,7 +379,7 @@ This project designs and develops an autonomous fire detection and monitoring dr
 
 ---
 
-### System Architecture
+### 3.3 System Architecture
 
 The system is organized into four main layers:
 
@@ -408,7 +408,7 @@ The system is organized into four main layers:
 
 ---
 
-### Hardware Components
+### 3.4 Hardware Components
 
 | # | Component | Specification | Role |
 |---|-----------|--------------|------|
@@ -427,7 +427,7 @@ The system is organized into four main layers:
 
 ---
 
-### AI / ML Pipeline
+### 3.5 AI / ML Pipeline
 
 #### Model: YOLOv8
 
@@ -470,7 +470,7 @@ Inference on Live Drone Feed (Raspberry Pi)
 
 ---
 
-### Simulation Setup
+### 3.6 Simulation Setup
 
 #### Tools Used
 
@@ -517,7 +517,7 @@ sudo apt install nvidia-cuda-toolkit
 
 ---
 
-### Communication: FCU and Raspberry Pi
+### 3.7 Communication: FCU and Raspberry Pi
 
 #### Protocol: UART (Serial)
 
@@ -549,7 +549,7 @@ GND ─────────────────── GND
 
 ---
 
-### Distance Calculation
+### 3.8 Distance Calculation
 
 The system uses the **Triangle Similarity Method** to estimate distance from the camera to the detected fire.
 
@@ -566,7 +566,7 @@ d = (f x R) / r
 
 ---
 
-### Technologies Used
+### 3.9 Technologies Used
 
 | Category | Technology |
 |----------|-----------|
@@ -583,7 +583,7 @@ d = (f x R) / r
 
 ---
 
-### Results
+### 3.10 Results
 
 - YOLOv8 model successfully detected fire in real-time video with **0.90 confidence score** on test images
 - Obstacle avoidance validated in Gazebo simulation using LiDAR data
@@ -593,7 +593,7 @@ d = (f x R) / r
 
 ---
 
-### Challenges and Solutions
+### 3.11 Challenges and Solutions
 
 | Challenge | Cause | Solution |
 |-----------|-------|----------|
@@ -605,7 +605,7 @@ d = (f x R) / r
 
 ---
 
-### Future Improvements
+### 3.12 Future Improvements
 
 - Extend battery life using solar power or fast-swap mechanisms
 - Design weather-resistant drone body for smoke and high-wind environments
@@ -619,13 +619,13 @@ d = (f x R) / r
 
 ## Chapter 4: Fire Drone System
 
-### Overview
+### 4.1 Overview
 
 This chapter documents the full hardware architecture of the autonomous firefighting drone — a six-rotor UAV platform designed to detect, assess, and monitor fire events in environments hazardous to human responders. It covers component selection, system integration, power architecture, electrical design, and the physical rationale behind every hardware decision.
 
 ---
 
-### Objectives
+### 4.2 Objectives
 
 - Design and assemble a stable six-rotor UAV suitable for autonomous firefighting missions
 - Select hardware based on payload capacity, power budget, weight, and compute requirements
@@ -635,7 +635,7 @@ This chapter documents the full hardware architecture of the autonomous firefigh
 
 ---
 
-### System Description
+### 4.3 System Description
 
 The drone is a hexacopter-class UAV combining three co-dependent subsystems:
 
@@ -651,7 +651,7 @@ The drone is a hexacopter-class UAV combining three co-dependent subsystems:
 
 ---
 
-### Architecture & Design
+### 4.4 Architecture & Design
 
 #### System Layers
 
@@ -716,7 +716,7 @@ Motor 5 ────┼──── Motor 3 (CCW)
 
 ---
 
-### Hardware Components
+### 4.5 Hardware Components
 
 #### Bill of Materials
 
@@ -800,7 +800,7 @@ Handles all high-level computation: YOLOv8 fire detection inference, OpenCV imag
 
 ---
 
-### Technologies Used
+### 4.6 Technologies Used
 
 #### Hardware
 
@@ -831,7 +831,7 @@ Handles all high-level computation: YOLOv8 fire detection inference, OpenCV imag
 
 ---
 
-### Implementation Details
+### 4.7 Implementation Details
 
 #### Assembly Sequence
 
@@ -888,7 +888,7 @@ sudo reboot
 
 ---
 
-### Mathematical & Physical Models
+### 4.8 Mathematical & Physical Models
 
 #### Rotor Thrust & Torque
 
@@ -952,7 +952,7 @@ d = (f · R) / r
 
 ---
 
-### Results
+### 4.9 Results
 
 #### Flight System
 
@@ -983,7 +983,7 @@ d = (f · R) / r
 
 ---
 
-### Challenges & Solutions
+### 4.10 Challenges & Solutions
 
 | Challenge | Root Cause | Solution |
 |---|---|---|
@@ -998,7 +998,7 @@ d = (f · R) / r
 
 ---
 
-### Future Improvements
+### 4.11 Future Improvements
 
 #### Hardware Generation 2
 
