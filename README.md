@@ -1,7 +1,5 @@
 # Machine Learning Technique for Enhanced Situational Awareness With Fire Fighter Drones
 
-# Machine Learning Technique for Enhanced Situational Awareness With Fire Fighter Drones
-
 
 # Table of Contents
 
