@@ -427,7 +427,7 @@ The system is organized into four main layers:
 
 ---
 
-### 3.5 AI / ML Pipeline
+### 3.5 AI / ML Pipeline {#35-ai-ml-pipeline}
 
 #### 3.5.1 Model: YOLOv8
 
