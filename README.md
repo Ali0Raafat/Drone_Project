@@ -1,5 +1,92 @@
 # Machine Learning Technique for Enhanced Situational Awareness With Fire Fighter Drones
 
+
+
+## Table of Contents
+
+### Chapter 1 — Introduction
+1. [Overview](#11-overview)
+2. [Problem Statement](#12-problem-statement)
+3. [Objectives](#13-objectives)
+4. [Significance](#14-significance)
+5. [Scope](#15-scope)
+6. [Motivation](#16-motivation)
+7. [Contributions](#17-contributions)
+8. [Organization](#18-organization)
+
+### Chapter 2 — Background & Related Work
+9. [Introduction](#21-introduction)
+10. [Overview](#22-overview)
+11. [Objectives](#23-objectives)
+12. [System Description](#24-system-description)
+13. [Core Concepts](#25-core-concepts)
+14. [Related Work](#26-related-work)
+15. [Technologies](#27-technologies)
+16. [Implementation Scope](#28-implementation-scope)
+17. [Challenges and Considerations](#29-challenges-and-considerations)
+
+### Chapter 3 — Simulation Using ROS
+18. [Overview](#chapter-3-simulation-using-ros)
+19. [Objectives](#objectives-2)
+20. [System Architecture](#system-architecture)
+21. [Hardware Components](#hardware-components)
+22. [AI / ML Pipeline](#ai--ml-pipeline)
+23. [Simulation Setup](#simulation-setup)
+24. [Communication: FCU and Raspberry Pi](#communication-fcu-and-raspberry-pi)
+25. [Distance Calculation](#distance-calculation)
+26. [Technologies Used](#technologies-used)
+27. [Results](#results)
+28. [Challenges and Solutions](#challenges-and-solutions)
+29. [Future Improvements](#future-improvements)
+
+### Chapter 4 — Fire Drone System
+30. [Overview](#chapter-4-fire-drone-system)
+31. [Objectives](#objectives-3)
+32. [System Description](#system-description-1)
+33. [Architecture & Design](#architecture--design)
+34. [Hardware Components (Bill of Materials)](#bill-of-materials)
+35. [Technologies Used](#technologies-used-1)
+36. [Implementation Details](#implementation-details)
+37. [Mathematical & Physical Models](#mathematical--physical-models)
+38. [Results](#results-1)
+39. [Challenges & Solutions](#challenges--solutions)
+40. [Future Improvements](#future-improvements-1)
+
+### Chapter 5 — Machine Learning Algorithms
+41. [Overview](#chapter-5-machine-learning-algorithms-for-fire-detection)
+42. [Objectives](#objectives-4)
+43. [System Description](#system-description-2)
+44. [Data Pipeline](#data-pipeline)
+45. [Model — YOLOv8](#model--yolov8)
+46. [Development Environment](#development-environment)
+47. [Technologies Used](#technologies-used-2)
+48. [Implementation Details](#implementation-details-1)
+49. [Distance Estimation](#distance-estimation)
+50. [Results](#results-2)
+51. [Challenges & Solutions](#challenges--solutions-1)
+52. [Future Improvements](#future-improvements-2)
+
+### Chapter 6 — FCU and Raspberry Pi Integration
+53. [Overview](#chapter-6-fcu-and-raspberry-pi-integration)
+54. [System Architecture](#system-architecture-1)
+55. [Components](#components)
+56. [UART Communication](#uart-communication)
+57. [Software Stack](#software-stack)
+58. [Telemetry and Control](#telemetry-and-control)
+59. [Key MAVProxy Commands](#key-mavproxy-commands)
+60. [Challenges & Solutions](#challenges--solutions-2)
+61. [Results](#results-3)
+62. [Future Improvements](#future-improvements-3)
+
+### Chapter 7 — Conclusion & Future Work
+63. [Conclusion](#conclusion)
+64. [Limitations](#limitations)
+65. [Future Work](#future-work)
+
+
+
+
+
 ## Project Description
 This project presents the design and development of an intelligent firefighting drone system aimed at enhancing situational awareness during emergency response operations. The system integrates a custom-built UAV equipped with high-resolution and optional thermal cameras, combined with advanced machine learning techniques for real-time fire and smoke detection.
 
@@ -1401,3 +1488,51 @@ python3 -m pip install -r pymavlink/requirements.txt
 | Fault Tolerance | Implement watchdog and communication failsafe mechanisms |
 
 ---
+
+
+## Chapter 7: Conclusion & Future Work
+
+### Conclusion
+
+The Fire Flight drone project demonstrates the potential of drone technology in wildfire management.
+
+Key outcomes:
+
+- Improved **safety** by reducing direct human exposure to fire zones
+- Improved **efficiency** in fire detection and monitoring
+- Cost-effective hardware design suitable for fire departments
+- Cameras and sensors enable civilian detection in smoke-filled environments
+- Fire Extinguisher Balls can reduce fire in targeted areas and create exit routes
+- Gas sensors generate toxicity reports to help firefighters protect themselves
+
+---
+
+### Limitations
+
+| Limitation | Description |
+|---|---|
+| Weather Conditions | High winds, heavy rain, or smoke can disrupt drone stability and control |
+| Battery Life | Limited flight duration requires frequent battery changes or recharging |
+| Operational Range | Drones cannot cover large wildfire areas without multiple units |
+| Data Transmission | Remote or mountainous areas suffer poor connectivity and signal loss |
+
+---
+
+### Future Work
+
+#### Extended Battery Life
+- Develop more efficient battery technologies
+- Explore alternative power sources such as solar power
+- Implement rapid charging systems and battery swap mechanisms
+
+#### Enhanced Weather Resistance
+- Design drones capable of operating in high winds, rain, and smoke
+- Implement advanced stabilization and navigation systems for adverse conditions
+
+#### Increased Range and Coverage
+- Develop long-range drones for larger area coverage
+- Implement drone swarming technology to coordinate multiple UAVs simultaneously
+
+#### Improved Communication
+- Enhance communication systems for reliable data transmission in remote terrain
+- Utilize satellite communication links or mesh networks for long-distance connectivity
