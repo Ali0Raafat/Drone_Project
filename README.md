@@ -925,3 +925,479 @@ d = (f · R) / r
 | Replace Raspberry Pi 4 with NVIDIA Jetson Orin | GPU-accelerated inference, lower latency |
 | Multi-drone swarm coordination | Wide-area awareness combined with targeted low-altitude response |
 
+
+---
+
+
+## Chapter 5: Machine Learning Algorithms for Fire Detection
+
+### Overview
+
+This chapter covers the complete machine learning pipeline developed to enable real-time fire detection from a drone-mounted camera. The system leverages **YOLOv8** to identify fire and smoke in live video feeds, and computes the **distance to the detected fire** using triangle similarity geometry. The pipeline spans dataset construction, annotation, augmentation, model training, evaluation, and on-device inference integration.
+
+---
+
+### Objectives
+
+- Build a fire-specific image dataset through manual collection and automated annotation
+- Train a high-accuracy, real-time fire detection model using YOLOv8
+- Integrate the model with the drone's onboard Raspberry Pi camera
+- Estimate the physical distance between the drone camera and the detected fire
+- Validate the model's performance through testing and iterative refinement
+
+---
+
+### System Description
+
+The detection subsystem operates as a perception layer within the broader drone architecture. The Raspberry Pi 4 captures live video, passes frames through the trained YOLOv8 model, and returns bounding boxes with class confidence scores.
+
+```
+Live Camera Feed
+      │
+      ▼
+ Frame Capture (Raspberry Pi Camera V1.3 — 5MP)
+      │
+      ▼
+ YOLOv8 Inference (Ultralytics)
+      │
+      ├── Bounding Box Coordinates
+      ├── Class Label: "Fire" / "Smoke"
+      └── Confidence Score
+            │
+            ▼
+     Distance Estimation (Triangle Similarity)
+            │
+            ▼
+     Alert / Telemetry Output → Ground Station
+```
+
+---
+
+### Data Pipeline
+
+#### Dataset Construction
+
+**Collection**
+- Approximately **3,000 fire images** gathered from open sources (Unsplash, iStock)
+- Images cover varied environments: indoor fires, wildfires, candlelight, vehicle fires
+
+**Annotation**
+- Primary tool: **LabelImg** — manual bounding box drawing per image
+- Annotation formats supported: **YOLO** and **PascalVOC**
+- Each bounding box labeled with the class `fire`
+
+**Data Augmentation & Expansion via Roboflow**
+
+| Roboflow Capability | Purpose |
+|---|---|
+| Access to 500+ community datasets | Expanded training diversity |
+| Automatic annotation | Eliminated manual labeling bottleneck |
+| Built-in augmentation pipeline | Rotation, flip, zoom, shear, brightness shift |
+| Export to YOLO format | Direct compatibility with YOLOv8 training |
+
+Five to six Roboflow datasets were merged with the original collection, significantly improving model accuracy and generalization.
+
+---
+
+### Model — YOLOv8
+
+#### Why YOLO over Other Pre-trained Models?
+
+| Criterion | Pre-trained Models | YOLO |
+|---|---|---|
+| Purpose | Classification / Feature extraction | Real-time object detection |
+| Speed | Varies | Optimized for high FPS |
+| Bounding box output | Not always native | Core output |
+| Deployment suitability | Requires adaptation | Production-ready |
+
+YOLO frames detection as a **single regression problem** — one forward pass of the CNN simultaneously predicts bounding box coordinates and class probabilities across the entire image, making it inherently faster than region-proposal approaches such as Faster R-CNN.
+
+#### YOLO Architecture
+
+The backbone is a deep CNN with 24 convolutional layers:
+
+- First 20 layers **pre-trained on ImageNet**
+- Additional convolutional and fully connected layers appended for detection
+- Final fully connected layer predicts:
+  - Bounding box coordinates `(x, y, w, h)`
+  - Objectness confidence score
+  - Class probability vector
+- Image divided into **S × S grid** — each cell predicts B bounding boxes and C class probabilities
+- Final detections produced after Non-Maximum Suppression (NMS)
+
+#### Why YOLOv8 Specifically?
+
+- **Accuracy:** Benchmarked on Microsoft COCO and Roboflow 100 datasets
+- **Developer Experience:** Clean CLI interface and well-structured Python API
+- **Community Support:** Large active community for troubleshooting and guidance
+- **Multi-task Capability:** Supports detection, segmentation, classification, and pose estimation
+- **Long-term Support:** Ultralytics actively maintains and updates the model
+
+---
+
+### Development Environment
+
+#### IDEs Used
+
+| Tool | Role |
+|---|---|
+| **Jupyter Notebook** | Local prototyping, visualization, iterative testing |
+| **Google Colab** | Cloud-based GPU training (Tesla T4 via CUDA) |
+
+#### Programming Language
+
+**Python** was the primary language due to:
+- Native support for ML frameworks (PyTorch, OpenCV, Ultralytics)
+- Object-oriented design enabling modular pipeline construction
+- Cross-platform compatibility
+- Extensive open-source ecosystem
+
+#### Key Libraries
+
+| Library | Purpose |
+|---|---|
+| **Ultralytics** | YOLOv8 model loading, training, inference |
+| **OpenCV** | Frame capture, image preprocessing, bounding box rendering |
+| **Roboflow SDK** | Dataset loading and management |
+| **PyTorch** | Deep learning backend for YOLOv8 |
+| **Matplotlib** | Training curve visualization |
+
+---
+
+### Technologies Used
+
+| Technology | Details |
+|---|---|
+| YOLOv8 | Ultralytics YOLOv8 (latest at time of development) |
+| Python | 3.x |
+| Google Colab | GPU: Tesla T4, CUDA 11.x |
+| Roboflow | Fire Detection dataset (multiple merged sources) |
+| OpenCV | 4.x |
+| LabelImg | Manual annotation |
+| Raspberry Pi Camera | Module V1.3 — 5MP, focal length 3.60mm |
+
+---
+
+### Implementation Details
+
+#### Step 1 — Environment Setup (Google Colab)
+
+```python
+pip install ultralytics
+pip install roboflow
+```
+
+#### Step 2 — Dataset Loading from Roboflow
+
+```python
+from roboflow import Roboflow
+
+rf = Roboflow(api_key="YOUR_API_KEY")
+project = rf.workspace("your-workspace").project("fire-detection-vdmz")
+dataset = project.version(1).download("yolov8")
+```
+
+#### Step 3 — Model Training
+
+```python
+from ultralytics import YOLO
+
+model = YOLO("yolov8n.pt")  # Load pretrained YOLOv8 nano backbone
+
+model.train(
+    data=dataset.location + "/data.yaml",
+    epochs=30,
+    imgsz=640,
+    batch=16,
+    optimizer="Adam",
+    patience=100,
+    cache=True,
+    save_period=1
+)
+```
+
+- **Optimizer:** Adam
+- **Epochs:** 30
+- **Image Size:** 640 × 640
+- **Pretrained Weights:** Transferred from ImageNet-trained backbone
+
+#### Step 4 — Inference on Test Images
+
+```python
+from ultralytics import YOLO
+from IPython.display import Image, display
+
+model = YOLO("/runs/detect/train/weights/best.pt")
+results = model.predict(source="test_image.jpg", imgsz=640)
+
+for r in results:
+    boxes = r.boxes     # Bounding box outputs
+    masks = r.masks     # Segment masks (if applicable)
+    probs = r.probs     # Classification probabilities
+```
+
+#### Step 5 — Batch Validation
+
+```python
+import glob
+from IPython.display import Image, display
+
+for image_path in glob.glob("/runs/detect/predict/*.jpg")[:1]:
+    display(Image(filename=image_path, width=600))
+    print("\n")
+```
+
+---
+
+### Distance Estimation
+
+The system estimates the **physical distance between the drone camera and the detected fire** using the **Triangle Similarity Method**.
+
+#### Parameters
+
+| Symbol | Description | Value |
+|---|---|---|
+| `f` | Focal length of camera | 3.60 mm (constant — Raspberry Pi Camera V1.3) |
+| `r` | Radius of reference marker in image plane | 10 cm (constant) |
+| `R` | Apparent size of object in image (computed per frame) | Varies |
+| `d` | Distance from camera to fire object | Computed output |
+
+#### Governing Equation
+
+```
+f / d = r / R
+```
+
+Solving for distance:
+
+```
+d = (f × R) / r
+```
+
+Where `R` is calculated dynamically from the bounding box dimensions during live video streaming. The focal length `f` and reference radius `r` remain constant for the Raspberry Pi Camera V1.3 module.
+
+---
+
+### Results
+
+| Metric | Outcome |
+|---|---|
+| Fire detection confidence (candle image) | **0.90** (90%) |
+| Fire detection confidence (vehicle fire) | **0.74** (74%) |
+| Training convergence | Achieved within 30 epochs |
+| Inference environment | Google Colab (Tesla T4 GPU) + Local Jupyter Notebook |
+| Model output | Bounding box with class label "Fire" and confidence score |
+| Validation | Visual inspection of prediction overlays on held-out images |
+
+---
+
+### Challenges & Solutions
+
+| Problem | Cause | Solution |
+|---|---|---|
+| Low initial detection accuracy | Small and homogeneous dataset (~3,000 images) | Integrated Roboflow datasets (5–6 additional sources) |
+| Manual annotation was time-consuming | Large volume of images requiring bounding boxes | Adopted Roboflow's automatic annotation feature |
+| GPU memory constraints | YOLOv8 training on large batches | Used Google Colab with Tesla T4 GPU |
+| Inference speed on Raspberry Pi | Limited onboard compute | Optimized model size; considered tiny-YOLO variant |
+| Distance accuracy at varying angles | Camera projection assumptions | Applied Triangle Similarity with fixed reference constants |
+
+---
+
+### Future Improvements
+
+- **Thermal Camera Integration:** Extend detection to infrared feeds for low-visibility and night-time scenarios
+- **Multi-class Detection:** Add `smoke`, `person`, and `vehicle` classes to enrich situational awareness
+- **Model Quantization:** Apply INT8 quantization or TensorRT optimization for faster Raspberry Pi inference
+- **Tracking Module:** Integrate YOLOv8's built-in multi-object tracker to maintain fire identity across frames
+- **Aerial Dataset Collection:** Build a drone-perspective fire dataset for improved aerial detection accuracy
+- **Swarm Coordination:** Feed detection outputs into a multi-drone scheduling algorithm for optimized coverage
+
+---
+
+
+
+## Chapter 6: FCU and Raspberry Pi Integration
+
+### Overview
+
+This chapter documents the integration between the **APM 2.8 Flight Control Unit (FCU)** and a **Raspberry Pi 4** companion computer in the firefighting drone system.
+
+The core design principle is a **clear functional separation**:
+
+| Component | Responsibility |
+|---|---|
+| APM 2.8 FCU | Real-time flight control, stabilization, sensor fusion |
+| Raspberry Pi 4 | AI inference, fire detection, high-level decision making |
+
+Communication between them is established via **MAVLink over UART**.
+
+---
+
+### System Architecture
+
+```
+┌──────────────────────────────────────────────┐
+│              Raspberry Pi 4                  │
+│   ┌──────────────┐   ┌─────────────────┐    │
+│   │  YOLOv8 Fire │   │  MAVLink Client │    │
+│   │  Detection   │──▶│  (pymavlink)    │    │
+│   └──────────────┘   └────────┬────────┘    │
+└────────────────────────────── │ ────────────┘
+                          UART  │  (TX/RX/GND)
+┌──────────────────────────────────────────────┐
+│              APM 2.8 FCU                     │
+│   ┌──────────────┐   ┌─────────────────┐    │
+│   │  Flight      │   │  MAVLink Server │    │
+│   │  Controller  │◀──│  (ArduPilot)    │    │
+│   └──────────────┘   └─────────────────┘    │
+└──────────────────────────────────────────────┘
+```
+
+**Data Flow:**
+
+```
+Sensors → FCU → [MAVLink/UART] → Raspberry Pi → AI Processing → Commands → FCU → Motors
+```
+
+---
+
+### Components
+
+| Component | Specification | Role |
+|---|---|---|
+| Flight Controller | APM 2.8 (ATmega2560) | Low-level flight control |
+| Companion Computer | Raspberry Pi 4 — 4GB | High-level processing and AI |
+| Protocol | MAVLink over UART | Bidirectional communication |
+| Interconnects | Jumper wires | Physical TX/RX/GND links |
+
+#### Why APM 2.8 is a Limiting Factor
+
+The APM 2.8 is functional but acknowledged as legacy hardware. This directly motivated the companion computer approach.
+
+| Limitation | Impact on This Project |
+|---|---|
+| Weak ATmega2560 MCU | Cannot run AI models — offloaded entirely to Raspberry Pi |
+| Low-accuracy IMU sensors | Compensated by GPS and software filtering |
+| No onboard logging | Logging handled on Raspberry Pi side |
+| High power consumption | Managed through buck converter and LiPo selection |
+
+---
+
+### UART Communication
+
+#### Physical Wiring
+
+| Raspberry Pi 4 | APM 2.8 |
+|---|---|
+| TX (GPIO 14) | RX |
+| RX (GPIO 15) | TX |
+| GND | GND |
+
+> TX and RX must be cross-connected. A shared ground is mandatory for signal integrity.
+
+#### Enabling UART on Raspberry Pi
+
+```bash
+# 1. Open configuration tool
+sudo raspi-config
+# Navigate to: Interface Options → Serial
+# Disable: Login shell over serial
+# Enable:  Serial port hardware
+
+# 2. Edit boot config
+sudo nano /boot/config.txt
+# Add: enable_uart=1
+
+# 3. Reboot
+sudo reboot
+```
+
+The primary UART interface is exposed at `/dev/ttyAMA0`.
+
+---
+
+### Software Stack
+
+| Library | Purpose |
+|---|---|
+| `pymavlink` | MAVLink message parsing and generation |
+| `pyserial` | Low-level serial port access |
+| `OpenCV` | Camera feed processing for fire detection |
+| `MAVProxy` | Ground control station and command relay |
+| `matplotlib` | Telemetry visualization |
+
+#### Key Setup Commands
+
+```bash
+# Install MAVLink tools
+sudo pip install pyserial pymavlink MAVProxy future
+
+# Clone MAVLink library
+git clone https://github.com/mavlink/mavlink.git --recursive
+python3 -m pip install -r pymavlink/requirements.txt
+```
+
+> **Note on Python:** Use **Python 3.x** with a virtual environment (`venv`). Ensure library versions are compatible with the ArduPilot ecosystem before deployment.
+
+---
+
+### Telemetry and Control
+
+#### Incoming Data (FCU to Raspberry Pi)
+
+- GPS coordinates (latitude, longitude, altitude)
+- Battery voltage and remaining capacity
+- IMU data (roll, pitch, yaw rates)
+- Current flight mode
+
+#### Outgoing Commands (Raspberry Pi to FCU)
+
+- Waypoint updates based on detected fire location
+- Altitude and speed adjustments
+- Mode switches: `GUIDED`, `AUTO`, `LAND`
+- Return-to-home trigger
+
+---
+
+### Key MAVProxy Commands
+
+| Command | Description |
+|---|---|
+| `arm throttle` | Arm motors |
+| `takeoff <alt>` | Takeoff to altitude in meters |
+| `mode GUIDED` | Enable autonomous guided mode |
+| `land` | Initiate auto-land |
+| `param fetch` | Sync parameters from FCU |
+
+---
+
+### Challenges & Solutions
+
+| Problem | Cause | Solution |
+|---|---|---|
+| UART port conflict | Login shell occupying `/dev/ttyAMA0` | Disabled serial login via `raspi-config` |
+| APM 2.8 cannot run AI | Limited MCU processing power | All inference offloaded to Raspberry Pi |
+| MAVLink version mismatch | Library incompatibility | Pinned compatible library versions in virtual environment |
+| Signal noise on UART | Long jumper wires without shielding | Kept wires short; verified shared GND |
+
+---
+
+### Results
+
+- Stable bidirectional UART link established between Raspberry Pi 4 and APM 2.8
+- Real-time MAVLink telemetry (GPS, altitude, battery) successfully streamed to companion computer
+- High-level commands (waypoints, mode changes) relayed from Raspberry Pi to FCU reliably
+- YOLOv8 fire detection pipeline running concurrently on Raspberry Pi without flight disruption
+
+---
+
+### Future Improvements
+
+| Area | Proposed Enhancement |
+|---|---|
+| Flight Controller | Upgrade to Pixhawk 6C (ARM Cortex-M7, richer feature set) |
+| Companion Computer | Upgrade to NVIDIA Jetson Nano for GPU-accelerated inference |
+| Communication Link | Replace UART with higher-bandwidth CAN bus or Ethernet |
+| Fault Tolerance | Implement watchdog and communication failsafe mechanisms |
+
+---
