@@ -18,7 +18,6 @@ import streamlit as st
 from ultralytics import YOLO
 from dotenv import load_dotenv
 
-# تحميل متغيرات البيئة من ملف .env
 load_dotenv()
 
 # ──────────────────────────────────────────────
@@ -89,7 +88,7 @@ def load_model(path: str) -> YOLO:
     except Exception as exc:
         logger.error("Failed to load model: %s", exc)
         st.error(
-            f"❌ Could not load model.\n\n{exc}"
+            f" Could not load model.\n\n{exc}"
         )
         st.stop()
 
@@ -124,7 +123,7 @@ def run_detection(
             distance = estimator.compute(bbox_height)
 
             # Build label
-            label = f"🔥 Fire  {conf:.0%}"
+            label = f" Fire  {conf:.0%}"
             if distance is not None:
                 label += f"  |  ~{distance} m"
 
@@ -175,10 +174,10 @@ def show_stats(detections: list[dict]) -> None:
     """Render detection statistics below the image."""
     n = len(detections)
     if n == 0:
-        st.success("✅ No fire detected.")
+        st.success(" No fire detected.")
         return
 
-    st.error(f"🔥 Fire detected — **{n}** instance(s)")
+    st.error(f" Fire detected — **{n}** instance(s)")
 
     cols = st.columns(3)
     avg_conf = sum(d["conf"] for d in detections) / n
@@ -189,7 +188,7 @@ def show_stats(detections: list[dict]) -> None:
     if distances:
         cols[2].metric("Closest (~m)", f"{min(distances)} m")
 
-    with st.expander("📋 Detection details"):
+    with st.expander(" Detection details"):
         for i, det in enumerate(detections, 1):
             dist_str = f"{det['distance']} m" if det["distance"] is not None else "N/A"
             st.write(f"**#{i}** — Confidence: `{det['conf']:.2%}` | Distance: `{dist_str}`")
@@ -200,11 +199,11 @@ def show_stats(detections: list[dict]) -> None:
 # ──────────────────────────────────────────────
 def build_sidebar() -> tuple[str, float]:
     """Render sidebar controls; returns (input_mode, conf_threshold)."""
-    st.sidebar.title("⚙️ Settings")
+    st.sidebar.title(" Settings")
 
     input_mode = st.sidebar.radio(
         "Input source",
-        ["📤 Upload Image", "📷 Camera Snapshot"],
+        [" Upload Image", " Camera Snapshot"],
         index=0,
     )
 
@@ -236,7 +235,7 @@ def main() -> None:
     )
 
     # ── Header ───────────────────────────────────
-    st.title("🔥 Fire Detection System")
+    st.title(" Fire Detection System")
     st.caption("Powered by YOLOv8 · Real-time fire localisation & distance estimation")
     st.markdown("---")
 
@@ -263,7 +262,7 @@ def main() -> None:
             frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
             if frame is None:
-                st.error("❌ Could not decode the uploaded image. Try another file.")
+                st.error(" Could not decode the uploaded image. Try another file.")
                 return
 
             with st.spinner("Running detection…"):
@@ -288,7 +287,7 @@ def main() -> None:
             frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
             if frame is None:
-                st.error("❌ Could not decode the camera frame.")
+                st.error(" Could not decode the camera frame.")
                 return
 
             with st.spinner("Running detection…"):
